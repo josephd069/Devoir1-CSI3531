@@ -87,17 +87,17 @@ void creerEnfantEtLire(int prcNum)
 		pipe(p);
 		pid = fork();
 		if (pid == 0){
-			close(p[0]); // close read end in child
+			close(p[0]); // ferme le bout de lecture du tuyau
 
-			dup2(p[1], STDOUT_FILENO); // redirect stdout to pipe write 
-			close(p[1]); // close write end in child
+			dup2(p[1], STDOUT_FILENO); // redirige stdout  à tuyau write 
+			close(p[1]); // ferme write dans enfant
 
 			execvp("./cpr", ["cpr", (prcNum - 1) , NULL ]); 
 			perror("execvp failed");
 			exit(1);
 		}
 		else if (pid >0){
-			close(pipe(1)); // close write end in parent
+			close(pipe(1)); // ferme write dans parent
 
 			printf("Processus %d commence\n", prcNum);
 

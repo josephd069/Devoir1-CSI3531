@@ -92,7 +92,11 @@ void creerEnfantEtLire(int prcNum)
 			dup2(p[1], STDOUT_FILENO); // redirige stdout  à tuyau write 
 			close(p[1]); // ferme write dans enfant
 
-			execvp("./cpr", ["cpr", (prcNum - 1) , NULL ]); 
+			execvp("./cpr", ("cpr", (prcNum - 1) , NULL )); // execute cpr avec prcNum-1
+			sprintf(prcNumStr, "%d", prcNum - 1);
+			char *args[] = {"./cpr", prcNumStr, NULL};
+			execvp(args[0], args); // execute cpr avec prcNum-1
+			
 			perror("execvp failed");
 			exit(1);
 		}

@@ -1,8 +1,9 @@
 /*------------------------------------------------------------
 Fichier: cpr.c
 
-Nom:
-Numero d'etudiant:
+Noms: Sabrina Seto et Joseph Daher
+Numeros d'etudiants: 300359255, 300361164
+	  
 
 Description: Ce programme contient le code pour la creation
              d'un processus enfant et y attacher un tuyau.
@@ -80,6 +81,38 @@ void creerEnfantEtLire(int prcNum)
 	}
 
 	else {
+		pipe();
+		pid_t pid = fork();
+		if (pid == 0){
+			close(pipe(0)); // close read end in child
+
+			dup2(pipe(1), STDOUT_FILENO); // redirect stdout to pipe write 
+			close(pipe(1)); // close write end in child
+
+			execvp("./cpr", ["cpr", (prcNum - 1) , NULL ]); 
+			perror("execvp failed");
+			exit(1);
+		}
+		else if (pid >0){
+			close(pipe(1)); // close write end in parent
+
+			printf("Processus %d commence\n", prcNum);
+
+			while(data=read(pipe(0), buffer, sizeof(buffer)) > 0) {
+				write(STDOUT_FILENO, buffer, data);
+			}
+			close(pipe(0)); 
+			
+			printf("Processus %d termine\n", prcNum);
+
+			sleep(10);
+			exit(0);
+
+		}
+		else{
+			perror("fork a failli");
+			exit(1);
+		}
 
 	}
 

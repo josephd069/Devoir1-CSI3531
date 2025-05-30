@@ -72,7 +72,7 @@ void creerEnfantEtLire(int prcNum)
        instructions du devoirs. */
 
 	int p[2], pid, nbytes;
-	char prcNumStr[15];
+	char prcNumStr[12];
 
 	// base case
 	if (prcNum == 1) {
@@ -101,17 +101,17 @@ void creerEnfantEtLire(int prcNum)
 			exit(1);
 		}
 		else if (pid > 0){
-			close(pipe(1)); // ferme write dans parent
+			close(p[1]); // ferme write dans parent
 
 			printf("Processus %d commence\n", prcNum);
 
 			ssize_t data;
 			char buffer[256];
 
-			while(data=read(pipe(0), buffer, sizeof(buffer)) > 0) {
+			while(data=read(p[0], buffer, sizeof(buffer)) > 0) {
 				write(STDOUT_FILENO, buffer, data);
 			}
-			close(pipe(0)); 
+			close(p[0]); 
 			
 			printf("Processus %d termine\n", prcNum);
 

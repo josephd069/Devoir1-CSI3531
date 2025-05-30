@@ -71,14 +71,16 @@ void creerEnfantEtLire(int prcNum)
     /* S.V.P. completez cette fonction selon les
        instructions du devoirs. */
 
-	int p[2], pid, nbytes;
+	int p[2], pid;
 	char prcNumStr[12];
 
 	// base case
 	if (prcNum == 1) {
 		printf("Processus 1 commence\n");
+		fflush(stdout);
 		sleep(5);
 		printf("Processus 1 termine\n");
+		fflush(stdout);
 		sleep(10);
 		exit(0);
 	}
@@ -92,7 +94,7 @@ void creerEnfantEtLire(int prcNum)
 			dup2(p[1], STDOUT_FILENO); // redirige stdout  à tuyau write 
 			close(p[1]); // ferme write dans enfant
 
-			execvp("./cpr", ("cpr", (prcNum - 1) , NULL )); // execute cpr avec prcNum-1
+			//execvp("./cpr", ("cpr", (prcNum - 1) , NULL )); // execute cpr avec prcNum-1
 			sprintf(prcNumStr, "%d", prcNum - 1);
 			char *args[] = {"./cpr", prcNumStr, NULL};
 			execvp(args[0], args); // execute cpr avec prcNum-1
@@ -103,17 +105,20 @@ void creerEnfantEtLire(int prcNum)
 		else if (pid > 0){
 			close(p[1]); // ferme write dans parent
 
+
 			printf("Processus %d commence\n", prcNum);
+			fflush(stdout);
 
 			ssize_t data;
 			char buffer[256];
 
-			while(data=read(p[0], buffer, sizeof(buffer)) > 0) {
+			while((data=read(p[0], buffer, sizeof(buffer))) > 0) {
 				write(STDOUT_FILENO, buffer, data);
 			}
 			close(p[0]); 
 			
 			printf("Processus %d termine\n", prcNum);
+			fflush(stdout);
 
 			sleep(10);
 			exit(0);

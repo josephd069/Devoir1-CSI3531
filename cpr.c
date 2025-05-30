@@ -17,6 +17,8 @@ Explication du processus zombie
 -------------------------------------------------------------*/
 #include <stdio.h>
 #include <sys/select.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 /* Prototype */
 void creerEnfantEtLire(int );
@@ -67,4 +69,18 @@ void creerEnfantEtLire(int prcNum)
 
     /* S.V.P. completez cette fonction selon les
        instructions du devoirs. */
+
+	// base case
+	if (prcNum == 1) {
+		printf("Processus 1 commence\n");
+		sleep(5);
+		printf("Processus 1 termine\n");
+		sleep(10);
+		exit(0);
+	}
+
+	else {
+
+	}
+
 }

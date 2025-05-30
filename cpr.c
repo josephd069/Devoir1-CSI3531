@@ -71,6 +71,9 @@ void creerEnfantEtLire(int prcNum)
     /* S.V.P. completez cette fonction selon les
        instructions du devoirs. */
 
+	int p[2], pid, nbytes;
+	char prcNumStr[10];
+
 	// base case
 	if (prcNum == 1) {
 		printf("Processus 1 commence\n");
@@ -81,13 +84,13 @@ void creerEnfantEtLire(int prcNum)
 	}
 
 	else {
-		pipe();
-		pid_t pid = fork();
+		pipe(p);
+		pid = fork();
 		if (pid == 0){
-			close(pipe(0)); // close read end in child
+			close(p[0]); // close read end in child
 
-			dup2(pipe(1), STDOUT_FILENO); // redirect stdout to pipe write 
-			close(pipe(1)); // close write end in child
+			dup2(p[1], STDOUT_FILENO); // redirect stdout to pipe write 
+			close(p[1]); // close write end in child
 
 			execvp("./cpr", ["cpr", (prcNum - 1) , NULL ]); 
 			perror("execvp failed");
@@ -97,6 +100,9 @@ void creerEnfantEtLire(int prcNum)
 			close(pipe(1)); // close write end in parent
 
 			printf("Processus %d commence\n", prcNum);
+
+			ssize_t data;
+			char buffer[256];
 
 			while(data=read(pipe(0), buffer, sizeof(buffer)) > 0) {
 				write(STDOUT_FILENO, buffer, data);

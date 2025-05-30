@@ -72,7 +72,7 @@ void creerEnfantEtLire(int prcNum)
        instructions du devoirs. */
 
 	int p[2], pid, nbytes;
-	char prcNumStr[10];
+	char prcNumStr[15];
 
 	// base case
 	if (prcNum == 1) {
@@ -100,7 +100,7 @@ void creerEnfantEtLire(int prcNum)
 			perror("execvp failed");
 			exit(1);
 		}
-		else if (pid >0){
+		else if (pid > 0){
 			close(pipe(1)); // ferme write dans parent
 
 			printf("Processus %d commence\n", prcNum);

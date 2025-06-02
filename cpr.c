@@ -15,6 +15,11 @@ Explication du processus zombie
 
 	(s.v.p. completez cette partie);
 
+	Dans ce programme, après avoir affiché "Processus X termine", chaque processus
+    fait un sleep(10). Pendant ce temps, le processus est terminé mais reste visible
+    dans la liste des processus comme un zombie, car le parent ne fait pas de wait().
+	Ce délai permet d'observer ces processus zombies avec des commandes comme "ps".
+
 -------------------------------------------------------------*/
 #include <stdio.h>
 #include <sys/select.h>
@@ -74,10 +79,10 @@ void creerEnfantEtLire(int prcNum)
 	int p[2], pid;
 	char prcNumStr[12];
 
-	// base case
+	// Cas de base : le dernier processus n'a pas d'enfant
 	if (prcNum == 1) {
 		printf("Processus 1 commence\n");
-		fflush(stdout);
+		fflush(stdout); // Force l'affichage immédiat
 		sleep(5);
 		printf("Processus 1 termine\n");
 		fflush(stdout);
@@ -94,12 +99,11 @@ void creerEnfantEtLire(int prcNum)
 			dup2(p[1], STDOUT_FILENO); // redirige stdout  à tuyau write 
 			close(p[1]); // ferme write dans enfant
 
-			//execvp("./cpr", ("cpr", (prcNum - 1) , NULL )); // execute cpr avec prcNum-1
 			sprintf(prcNumStr, "%d", prcNum - 1);
 			char *args[] = {"./cpr", prcNumStr, NULL};
 			execvp(args[0], args); // execute cpr avec prcNum-1
 			
-			perror("execvp failed");
+			perror("execvp failed"); // Si execvp échoue, affiche une erreur et termine
 			exit(1);
 		}
 		else if (pid > 0){
@@ -112,6 +116,7 @@ void creerEnfantEtLire(int prcNum)
 			ssize_t data;
 			char buffer[256];
 
+			// Lit les données envoyées par l'enfant via le tuyau
 			while((data=read(p[0], buffer, sizeof(buffer))) > 0) {
 				write(STDOUT_FILENO, buffer, data);
 			}
@@ -120,12 +125,12 @@ void creerEnfantEtLire(int prcNum)
 			printf("Processus %d termine\n", prcNum);
 			fflush(stdout);
 
-			sleep(10);
+			sleep(10);  // Pause pour observer l'état zombie
 			exit(0);
 
 		}
 		else{
-			perror("fork a failli");
+			perror("fork a failli");   // Erreur lors du fork
 			exit(1);
 		}
 
